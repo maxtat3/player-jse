@@ -7,9 +7,6 @@ sourceCompatibility = 1.7
 
 repositories {
     mavenCentral()
-    flatDir {
-        dirs 'lib'
-    }
 }
 
 dependencies {
