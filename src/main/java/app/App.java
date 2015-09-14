@@ -1,10 +1,10 @@
 package app;
 
 import gui.MainFrame;
+import gui.MainFrameV1;
 import listners.AllListners;
 import player.AudioPreprocessor;
 import utils.FileUtils;
-
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
@@ -14,24 +14,37 @@ import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 public class App {
 
 
+//    public static void main(String[] args) {
+//        try {
+//            UIManager.setLookAndFeel(new NimbusLookAndFeel());
+//        } catch (UnsupportedLookAndFeelException e) {
+//            e.printStackTrace();
+//        }
+//
+//        MainFrame mainFrame = new MainFrame();
+//        mainFrame.setVisible(true);
+//
+//        FileUtils fileUtils = new FileUtils(mainFrame);
+//
+//        AudioPreprocessor audioPreproc = new AudioPreprocessor(mainFrame, fileUtils);
+//
+//        new AllListners(mainFrame, audioPreproc, fileUtils);
+//
+//
+//    }
+
+
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(new NimbusLookAndFeel());
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+        MainFrameV1 mainFrameV1 = new MainFrameV1();
+        mainFrameV1.setVisible(true);
 
-        MainFrame mainFrame = new MainFrame();
-        mainFrame.setVisible(true);
-
-        FileUtils fileUtils = new FileUtils(mainFrame);
-
-        AudioPreprocessor audioPreproc = new AudioPreprocessor(mainFrame, fileUtils);
-
-        new AllListners(mainFrame, audioPreproc, fileUtils);
-
+//        FileUtils fileUtils = new FileUtils(mainFrameV1);
 
     }
-
 
 }
