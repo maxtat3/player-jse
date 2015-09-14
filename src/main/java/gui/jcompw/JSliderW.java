@@ -3,6 +3,7 @@ package gui.jcompw;
 import listners.ChangeListners;
 
 import javax.swing.*;
+import java.awt.event.MouseWheelListener;
 
 /**
  * Created by max on 27.09.14.
@@ -42,6 +43,10 @@ public class JSliderW extends MainAttrAbstr {
 
     public boolean getValueIsAdjusting() {
         return jSlider.getValueIsAdjusting();
+    }
+
+    public void addMouseWheelListener(MouseWheelListener mwhl){
+        jSlider.addMouseWheelListener(mwhl);
     }
 
 }

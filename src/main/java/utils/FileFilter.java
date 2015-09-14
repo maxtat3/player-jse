@@ -23,7 +23,7 @@ public class FileFilter extends javax.swing.filechooser.FileFilter {
 
     @Override
     public String getDescription() {
-        return discr + " *." + ext;
+        return " *" + ext;
     }
 
 }

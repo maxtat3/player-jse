@@ -1,59 +1,118 @@
 package utils;
 
 import app.Const;
+import gui.AllJComp;
 import gui.MainFrameV1;
+import gui.MainFrameV2;
 import player.MP3;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by max on 10.09.14.
  */
 public class FileUtils {
 
-    private MainFrameV1 mainFrameV1;
-    private utils.FileFilter ff = new utils.FileFilter("mp3", "файлы ");
+    private AllJComp mainFrame;
+    private JFileChooser jfch; // file chooser for choose audio files and add to this player
 
 
-    public FileUtils(MainFrameV1 mainFrameV1) {
-        this.mainFrameV1 = mainFrameV1;
+    public FileUtils(MainFrameV1 mainFrame) {
+        this.mainFrame = mainFrame;
+        jfch = addFileChooser();
+        addFileFilter(jfch, Const.EXTS);
+    }
+
+	public FileUtils(MainFrameV2 mainFrame) {
+		this.mainFrame = mainFrame;
+		jfch = addFileChooser();
+		addFileFilter(jfch, Const.EXTS);
+	}
+
+    /**
+     * Добавление песни из диалога выбора
+     */
+    public void addSongToPlayList(){
+        int result = jfch.showOpenDialog(mainFrame.getContentPane());
+        if (result == JFileChooser.APPROVE_OPTION){
+
+            File[] selFiles = jfch.getSelectedFiles();
+
+            if (selFiles[0].isDirectory()){
+                File[] filesInDir = selFiles[0].listFiles();
+                Arrays.sort(filesInDir);
+                addFilesToPlaylist(filesInDir);
+            } else {
+                addFilesToPlaylist(selFiles);
+            }
+
+            //преобразовуем массив фалов в коллекцию фалов
+//            List<File> lfiles = new ArrayList<File>();
+//            for (File f : selFiles){
+//                lfiles.add(f);
+//            }
+
+            addFilesToPlaylist(selFiles);
+        }
+    }
+
+    /**
+     * Добавление песни через DnD в playlist
+     * @param files - коллекция полученных файлов
+     */
+//    public void addSongToPlayList(List<File> files) {
+//        addFilesToPlaylist(files);
+//    }
+
+    /**
+     * Добавление песни через DnD в playlist
+     * @param files - массив полученных файлов
+     */
+    public void addSongToPlayList(File[] files){
+        addFilesToPlaylist(files);
     }
 
 
     /**
-     * Добавление песни из диалога выбора (jfilechooser) в playlist (jlist)
+     * Добавляет фалйлы в plylist
+     * @param files - добавляемые файлы
      */
-    public void addSongToPlayList(){
-        addFileFilter(mainFrameV1.getJfch(), ff);
-        int result = mainFrameV1.getJfch().showOpenDialog(mainFrameV1.getContentPane());
-        if (result == JFileChooser.APPROVE_OPTION){
-            File[] selFiles = mainFrameV1.getJfch().getSelectedFiles();
-            for (File file : selFiles){ // перебираем все выделенные файлы и добавляем их в playlist
-                MP3 mp3 = new MP3(file.getName(), file.getPath());
-                if ( !mainFrameV1.getPlayListModel().contains(mp3) ){ //если такого фала в playlist нет - добавим его
-                    mainFrameV1.getPlayListModel().addElement(mp3);
-                }
+//    private void addFilesToPlaylist(List<File> files){
+//        for(File file : files){
+//            MP3 mp3 = new MP3(file.getName(), file.getPath());
+//            if ( !mainFrame.getPlayListModel().contains(mp3) ){ //если такого фала в playlist нет - добавим его
+//                mainFrame.getPlayListModel().addElement(mp3);
+//            }
+//        }
+//    }
+
+    private void addFilesToPlaylist(File[] files) {
+        for(File file : files){
+            MP3 mp3 = new MP3(file.getName(), file.getPath());
+            if ( !mainFrame.getPlayListModel().contains(mp3) ){ //если такого фала в playlist нет - добавим его
+                mainFrame.getPlayListModel().addElement(mp3);
             }
         }
     }
+
 
 
     /**
      * Удаление песни из playlist (JList)
      */
     public void removeSongToPlayList(){
-        int[] selSongs = mainFrameV1.getjList1().getSelectedIndices();
+        int[] selSongs = mainFrame.getjList1().getSelectedIndices();
         if (selSongs.length > 0){ // если выбрана хотябы одна песня
             ArrayList<MP3> mp3ListForRem = new ArrayList<MP3>(); //сохраняем все выбранные песни для удаления из playlist
             for (int i = 0; i < selSongs.length; i++) {
-                MP3 mp3 = (MP3) mainFrameV1.getPlayListModel().getElementAt(selSongs[i]);
+                MP3 mp3 = (MP3) mainFrame.getPlayListModel().getElementAt(selSongs[i]);
                 mp3ListForRem.add(mp3);
             }
             for (MP3 mp3 : mp3ListForRem){
-                mainFrameV1.getPlayListModel().removeElement(mp3);
+                mainFrame.getPlayListModel().removeElement(mp3);
             }
         }
     }
@@ -85,7 +144,7 @@ public class FileUtils {
      * @return - расширение
      */
     public static String getFileExtension(File file) {
-        String ext = Const.EMPTY_STR;
+        String ext = Const.SpecSym.EMPTY_STR;
         String fileName = file.getName();
 
         int indexForFullName = fileName.length(); //индекс для полного имени файла включая расширение (например для music.mp3 = 9)
@@ -97,20 +156,28 @@ public class FileUtils {
         return ext;
     }
 
+    /**
+     * Добавляем возможность добавлять файлов при помощи диалога выбора
+     * @return - диалог выбора
+     */
+    private JFileChooser addFileChooser() {
+        JFileChooser fc = new JFileChooser();
+        fc.setAcceptAllFileFilterUsed(true);
+        fc.setDialogTitle(Const.FileChooserProps.DIALOG_TITLE);
+        fc.setMultiSelectionEnabled(true);
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        return fc;
+    }
 
     /**
      * Добавление файл фильтра к диалогу выбора файлов.
      * @param jfc - экземпляр диалог выбора файлов
-     * @param ff - экземпляр файл фильтра
-    */
-    public void addFileFilter(JFileChooser jfc, FileFilter ff){
-        jfc.removeChoosableFileFilter( jfc.getFileFilter() ); //убираем стандартный файл фи
-        jfc.setFileFilter(ff);
+     * @param exts - расширения файловЮ добавляемых к файл фильтру
+     */
+    public void addFileFilter(JFileChooser jfc, String[] exts){
+        for (String ext : exts){
+            jfc.addChoosableFileFilter(new FileFilter(ext, Const.SpecSym.EMPTY_STR));
+        }
     }
-
-
-
-
-
 
 }

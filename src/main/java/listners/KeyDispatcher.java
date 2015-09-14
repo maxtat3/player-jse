@@ -1,6 +1,7 @@
 package listners;
 
 import app.Const;
+import gui.AllJComp;
 import gui.MainFrameV1;
 import player.AudioPreprocessor;
 import utils.FileUtils;
@@ -13,17 +14,22 @@ import java.awt.event.KeyEvent;
  */
 public class KeyDispatcher implements KeyEventDispatcher {
 
-    private MainFrameV1 mainFrame;
+    private AllJComp mainFrame;
     private AudioPreprocessor audioPreproc;
     private FileUtils fileUtils;
 
 
-    public KeyDispatcher(MainFrameV1 mainFrame, AudioPreprocessor audioPreproc, FileUtils fileUtils) {
+    public KeyDispatcher(AllJComp mainFrame, AudioPreprocessor audioPreproc, FileUtils fileUtils) {
         this.mainFrame = mainFrame;
         this.audioPreproc = audioPreproc;
         this.fileUtils = fileUtils;
     }
 
+    /**
+     * Обработка событий при нажатии hot keys, когда главное окно программы активно
+     * @return
+	 * @param e
+	 */
     @Override
     public boolean dispatchKeyEvent(KeyEvent e) {
         if (e.getID() == KeyEvent.KEY_PRESSED){
@@ -31,7 +37,7 @@ public class KeyDispatcher implements KeyEventDispatcher {
             if (ctrl_f(e)){
                 mainFrame.getJtfLiveSearch().requestFocus();
 
-            } else if (ctrl_a(e)){
+            } else if (ctrl_o(e)){
                 fileUtils.addSongToPlayList();
 
             } else if (ctrl_z(e)){
@@ -75,18 +81,20 @@ public class KeyDispatcher implements KeyEventDispatcher {
             } else if (ctrl_w(e)){
                 audioPreproc.playNextSong();
 
+            } else if (del(e)){
+                fileUtils.removeSongToPlayList();
             }
-
         }
         return false;
     }
+
 
     private boolean ctrl_f(KeyEvent e){
         return controlKeyPressed(KeyEvent.VK_F, e);
     }
 
-    private boolean ctrl_a(KeyEvent e){
-        return controlKeyPressed(KeyEvent.VK_A, e);
+    private boolean ctrl_o(KeyEvent e){
+        return controlKeyPressed(KeyEvent.VK_O, e);
     }
 
     private boolean ctrl_z(KeyEvent e){
@@ -129,12 +137,30 @@ public class KeyDispatcher implements KeyEventDispatcher {
         return controlKeyPressed(KeyEvent.VK_W, e);
     }
 
+    private boolean del(KeyEvent e){
+        return keyPressed(KeyEvent.VK_DELETE, e);
+    }
+
 
     /**
-     *
-     * @param key
-     * @param e
-     * @return
+     * Проверка нажатия одной клавиши
+     * @param key - код клавиши
+     * @param e - событие
+     * @return true - да
+     */
+    private boolean keyPressed(int key, KeyEvent e){
+        if (e.getKeyCode() == key){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Проверка нажатия Ctrl + клавиши
+     * @param key - код клавиши
+     * @param e - событие
+     * @return true - да
      */
     private boolean controlKeyPressed(int key, KeyEvent e){
         if (e.isControlDown() && e.getKeyCode() == key){
@@ -148,8 +174,8 @@ public class KeyDispatcher implements KeyEventDispatcher {
     private static final int STEP_OF_REWIND = 50;
 
     /**
-     *
-     * @param dir
+     * Перемотка проигрываемой песни в обоиз направлениях
+     * @param dir - направление пермотки: влево\вправо
      */
     private void rewinding(RewindDirection dir){
         int newVal = 0;
@@ -158,14 +184,14 @@ public class KeyDispatcher implements KeyEventDispatcher {
         } else if (dir == RewindDirection.RIGHT){
             newVal = mainFrame.getJslRewindProgress().getValue() + STEP_OF_REWIND;
         }
-//          audioPreproc.setPositionValue( mainFrame.getJslRewindProgress().getValue() + 100 ); // ???????
+//          audioPreproc.setPosValue( mainFrame.getJslRewindProgress().getValue() + 100 ); // ???????
         mainFrame.getJslRewindProgress().setValue(newVal);
 
         try {
             // получаем значение в Байтах на сколько нужно перемотать в главном player
             // Например jumpBytes = ((long)550 Байт * 750) / 1000 = 412500 * 750 = (long) Math.round(412,5) = 412 -> to jumpBytes
             // Формула jumpBytes = Х Байт * currJSliderValue / maxJSliderValue
-            long jumpBytes = (long) Math.round( ((long)audioPreproc.getDurSongBytes() * mainFrame.getJslRewindProgress().getValue()) / Const.SliderProps.REWIND_PROGRESS_RESOL);
+            long jumpBytes = (long) Math.round( ((long)audioPreproc.getDurSongBytes() * mainFrame.getJslRewindProgress().getValue()) / Const.SliderProps.PROGRESS_RESOL);
             audioPreproc.jump(jumpBytes); // передаем это значение в player
         } catch (Exception ex){
             ex.printStackTrace();
@@ -176,7 +202,7 @@ public class KeyDispatcher implements KeyEventDispatcher {
     }
 
     /**
-     *
+     * Состояния направления перемотки
      */
     private enum RewindDirection {
         LEFT,

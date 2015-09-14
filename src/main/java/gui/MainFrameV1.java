@@ -93,15 +93,13 @@ public class MainFrameV1 extends AllJComp {
         jPanelPlaylistAndDirection = new JPanel();
         jPanelVolAndProgress = new JPanel();
 
-        // create file chooser for choose audio files and add to this player
-        jfch = addFileChooser();
 
         // create playlist model, for main playlist this player
         playListModel = new DefaultListModel();
     }
 
     /**
-     * Создаем панели, необходимые для размещения на них компонентов
+     * Создаем панели, и размещаем на них компоненты
      */
     @Override
     public void setJPanels() {
@@ -112,7 +110,7 @@ public class MainFrameV1 extends AllJComp {
     }
 
     /**
-     * вывод всей информации о проигрываемой композиции
+     * информ. панель - вывод всей информации о проигрываемой композиции
      */
     public void setInformPanel() {
         GroupLayout jPanelInformationLayout = new GroupLayout(jPanelInformation);
@@ -186,7 +184,7 @@ public class MainFrameV1 extends AllJComp {
     }
 
     /**
-     * размещение ползунков громкости и прокрутки
+     * панель для размещения ползунков громкости и прокрутки
      * а также кнопки: моно\стерео, выкл. звук
      */
     public void setVolumeAndProgressPanel() {
@@ -224,7 +222,7 @@ public class MainFrameV1 extends AllJComp {
     }
 
     /**
-     * основные элементы управления + plylist + поиск по playlist
+     * панель для размещения основных элементов управления + plylist + поиск по playlist
      */
     public void setDirectionPanel() {
         GroupLayout jPanelPlaylistAndDirectionLayout = new GroupLayout(jPanelPlaylistAndDirection);
@@ -339,7 +337,6 @@ public class MainFrameV1 extends AllJComp {
 
     /**
      * Установка различных свойств для созданных графических компонентов
-     * !!!!!!!!!!!!!!!!!!!! не забыть уст имена
      */
     @Override
     public void setJCompProps() {
@@ -347,32 +344,32 @@ public class MainFrameV1 extends AllJComp {
         // JLabel properties
         // -----------------
         jLabelFileName.setFont( new Font(Const.Font.DEJAVU_SANS, Font.PLAIN, 14) ); // NOI18N
-        jLabelFileName.setText(Const.LabelProps.EMPTY_FIELD_NOT_SONG);
+        jLabelFileName.setText(Const.LabelProps.NOT_SONG);
 
         jLabelPlaybackTime.setFont( new Font(Const.Font.DEJAVU_SANS, Font.PLAIN, 20) ); // NOI18N
-        jLabelPlaybackTime.setText(Const.LabelProps.EMPTY_FIELD_NOT_TIME);
+        jLabelPlaybackTime.setText(Const.SpecSym.NOT_TIME);
 
         jLabelSepTime.setFont( new Font(Const.Font.DEJAVU_SANS, Font.PLAIN, 20) ); // NOI18N
-        jLabelSepTime.setText(Const.LabelProps.SEPARATOR);
+        jLabelSepTime.setText(Const.SpecSym.SEPARATOR);
 
         jLabelTotalTime.setFont(new Font(Const.Font.DEJAVU_SANS, Font.PLAIN, 20)); // NOI18N
-        jLabelTotalTime.setText(Const.LabelProps.EMPTY_FIELD_NOT_TIME);
+        jLabelTotalTime.setText(Const.SpecSym.NOT_TIME);
 
         jLabelPlayerState.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 18)); // NOI18N
-        jLabelPlayerState.setText(Const.LabelProps.EMPTY_FIELD_DOT);
+        jLabelPlayerState.setText(Const.SpecSym.DOT);
         jLabelPlayerState.setForeground(new Color(Const.Color.GREY)); // default color
 
         jLabelMonoStereoSound.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 14)); // NOI18N
-        jLabelMonoStereoSound.setText(Const.LabelProps.EMPTY_FIELD_DOT);
+        jLabelMonoStereoSound.setText(Const.SpecSym.DOT);
 
         jLabelSampleRate.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 14)); // NOI18N
-        jLabelSampleRate.setText(Const.LabelProps.EMPTY_FIELD_DOT);
+        jLabelSampleRate.setText(Const.SpecSym.DOT);
 
         jLabelBitRate.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 14)); // NOI18N
-        jLabelBitRate.setText(Const.LabelProps.EMPTY_FIELD_DOT);
+        jLabelBitRate.setText(Const.SpecSym.DOT);
 
         jLabelFileFormat.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 14)); // NOI18N
-        jLabelFileFormat.setText(Const.LabelProps.EMPTY_FIELD_DOT);
+        jLabelFileFormat.setText(Const.SpecSym.DOT);
 
         jLabelTitle.setText(Const.LabelProps.TITLE_HEADER); //default value, view in start app
 
@@ -386,9 +383,9 @@ public class MainFrameV1 extends AllJComp {
 
         jLabelCommentLine1.setText(Const.LabelProps.COMMENT_HEADER); //default value, view in start app
 
-        jLabelCommentLine2.setText(Const.LabelProps.EMPTY_FIELD_DOT);
+        jLabelCommentLine2.setText(Const.SpecSym.DOT);
 
-        jLabelCommentLine3.setText(Const.LabelProps.EMPTY_FIELD_DOT);
+        jLabelCommentLine3.setText(Const.SpecSym.DOT);
 
 
         // ------------------
@@ -457,49 +454,31 @@ public class MainFrameV1 extends AllJComp {
         jslVolume.setMaximum(Const.SliderProps.VOLUME_MAXVALUE);
         jslVolume.setValue(Const.SliderProps.VOLUME_DEFAULT_VALUE);
         jslVolume.setMinorTickSpacing(0); // установка шага регулирования
-        jslVolume.setSnapToTicks(true);
+        jslVolume.setMajorTickSpacing(50); // расстояние, через которые будут выводиться большие деления
+        jslVolume.setMinorTickSpacing(10); //расстояние, через которые будут выводиться маленькие деления
+        jslVolume.setPaintTicks(true); //включить прорисовку делений
+        jslVolume.setPaintLabels(true); //включить прорисовку меток делений
+        jslVolume.setFont(new Font("Veranda", Font.PLAIN, 8)); //шрифт для делений и меток
 
-        jslRewindProgress.setToolTipText(Const.SliderProps.REWIND_PROGRESS_DEFAULT_TOOLTIP);
-        jslRewindProgress.setName(Const.SliderProps.REWIND_PROGRESS_NAME);
-        jslRewindProgress.setMaximum(Const.SliderProps.REWIND_PROGRESS_MAXVALUE);
-        jslRewindProgress.setValue(Const.SliderProps.REWIND_PROGRESS_DEFAULT_VALUE); // начальное значение всегда = 0
+        jslRewindProgress.setToolTipText(Const.SliderProps.PROGRESS_DEFAULT_TOOLTIP);
+        jslRewindProgress.setName(Const.SliderProps.PROGRESS_NAME);
+        jslRewindProgress.setMaximum(Const.SliderProps.PROGRESS_MAXVALUE);
+        jslRewindProgress.setValue(Const.SliderProps.PROGRESS_DEFAULT_VALUE); // начальное значение всегда = 0
         jslRewindProgress.setMinorTickSpacing(1); // установка шага регулирования
-        jslRewindProgress.setSnapToTicks(true);
 
 
         // ------------------
         // JList properties
         // ------------------
-//        jList1.setModel(new javax.swing.AbstractListModel() {
-//            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5", "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-//            public int getSize() { return strings.length; }
-//            public Object getElementAt(int i) { return strings[i]; }
-//        });
-
         jList1.setModel(playListModel);
         jList1.setName(Const.ListProps.PLAYLIST_NAME);
 
         // jScrollPane1 properties
         jScrollPane1.setViewportView(jList1);
-//        jScrollPane1.setMaximumSize(new Dimension(300, 250));
 
 
         pack();
     }
-
-
-    /**
-     * Добавляем возможность добавлять файлов при помощи диалога выбора
-     */
-    private JFileChooser addFileChooser() {
-        JFileChooser fc = new JFileChooser();
-        fc.setAcceptAllFileFilterUsed(true);
-        fc.setDialogTitle(Const.FileChooserProps.DIALOG_TITLE);
-        fc.setMultiSelectionEnabled(true);
-        return fc;
-    }
-
-
 
 
 

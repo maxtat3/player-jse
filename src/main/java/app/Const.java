@@ -1,12 +1,28 @@
 package app;
 
+import javax.swing.*;
+import java.net.URL;
+
 /**
  * Created by max on 16.09.14.
  */
 public final class Const {
 
-    public static final String EMPTY_STR = "";
+    public static final String PLAYER_VERSION = "player v0.7.9";
     public static final String NONAME = "noname";
+    public static final String[] EXTS = {".mp3", ".flac", ".ape"}; //поддерживаемые аудио форматы (расширения)
+
+
+    /**
+     * Специальные символы
+     */
+    public static final class SpecSym{
+        public static final String DOT = ".";
+        public static final String THREE_DOT = "...";
+        public static final String EMPTY_STR = "";
+        public static final String SEPARATOR = "/";
+        public static final String NOT_TIME = "--:--";
+    }
 
     /**
      * Свойства и имена заголовков
@@ -21,7 +37,8 @@ public final class Const {
         public static final String STEREO = "stereo";
         public static final String UNKN = "unkn";
 
-        public static final String SEPARATOR = "/";
+        public static final String KHZ = " kHz";
+        public static final String KBPS = " kbps";
 
         public static final String TITLE_HEADER = "title: ";
         public static final String AUTHOR_HEADER = "author: ";
@@ -30,13 +47,10 @@ public final class Const {
         public static final String YEAR_HEADER = "year: ";
         public static final String COMMENT_HEADER = "comment: ";
 
-        public static final int MAX_SONG_NAME_LENGTH = 55; // максимальная длина в названии песни отображаемая в gui
-        public static final int MAX_TAG_LENGTH = 45; // максимальная длина каждого из tags отображаемых в gui
+        public static final int MAX_SONG_NAME_LENGTH = 55; // максимальная длина названия песни отображаемая в gui
+        public static final int MAX_TAG_LENGTH = 45; // максимальная длина каждого из tags отображаемых в gui (inf panel)
 
-        public static final String EMPTY_FIELD_DOT = ".";
-        public static final String EMPTY_FIELD_THREE_DOT = "...";
-        public static final String EMPTY_FIELD_NOT_TIME = "--:--";
-        public static final String EMPTY_FIELD_NOT_SONG = "This show is file name";
+        public static final String NOT_SONG = "This show is file name";
     }
 
     /**
@@ -83,11 +97,11 @@ public final class Const {
         public static final int VOLUME_DEFAULT_VALUE = 5 ;
         public static final int VOLUME_MAXVALUE = 200;
 
-        public static final String REWIND_PROGRESS_NAME = "rewindProgress";
-        public static final String REWIND_PROGRESS_DEFAULT_TOOLTIP = "Прокрутка композиции";
-        public static final int REWIND_PROGRESS_DEFAULT_VALUE = 0;
-        public static final int REWIND_PROGRESS_MAXVALUE = 1000;
-        public static final int REWIND_PROGRESS_RESOL = 1000; // разрешающая срособность ползунка перемотки песни
+        public static final String PROGRESS_NAME = "rewindProgress";
+        public static final String PROGRESS_DEFAULT_TOOLTIP = "Прокрутка композиции";
+        public static final int PROGRESS_DEFAULT_VALUE = 0;
+        public static final int PROGRESS_MAXVALUE = 1000;
+        public static final int PROGRESS_RESOL = 1000; // разрешающая срособность ползунка перемотки песни
     }
 
     /**
@@ -125,7 +139,7 @@ public final class Const {
     }
 
     /**
-     *
+     * Цвета элементов gui
      */
     public static final class Color {
         public static final int GREY = 0x585858;
@@ -133,6 +147,9 @@ public final class Const {
         public static final int BLUE = 0x08088A;
     }
 
+    /**
+     * Размеры элементов gui
+     */
     public static final class Size {
         public static final int PANEL_INFORM_WIDTH = 350;
         public static final int PANEL_INFORM_HEIGHT = 278;
@@ -145,8 +162,27 @@ public final class Const {
         public static final int SCROLL_PANE_HEIGHT = 256;
     }
 
+    /**
+     * Шрифты
+     */
     public static final class Font {
         public static final String DEJAVU_SANS = "DejaVu Sans";
     }
+
+	/**
+	 *
+	 */
+	public static final class Ico {
+		public static final String PLAY = "./src/main/java/images/Play.png";
+		public static final String STOP = "./src/main/java/images/stop-red-icon.png";
+		public static final String PREV = "./src/main/java/images/rewind.png";
+		public static final String NEXT = "./src/main/java/images/forward.png";
+
+		public static final String MUTE = "./src/main/java/images/mute.png";
+
+		public static final String ADD = "./src/main/java/images/open-icon.png";
+		public static final String REM = "./src/main/java/images/remove_icon.png";
+		public static final String SETG = "./src/main/java/images/gear_16.png";
+	}
 
 }

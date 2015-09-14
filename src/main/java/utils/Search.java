@@ -1,5 +1,6 @@
 package utils;
 
+import gui.AllJComp;
 import gui.MainFrameV1;
 import player.MP3;
 
@@ -10,13 +11,13 @@ import java.util.ArrayList;
  */
 public class Search {
 
-    private MainFrameV1 mainFrame;
+    private AllJComp mainFrame;
 
 
     public Search() {
     }
 
-    public Search(MainFrameV1 mainFrame) {
+    public Search(AllJComp mainFrame) {
         this.mainFrame = mainFrame;
     }
 

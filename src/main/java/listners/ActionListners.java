@@ -9,11 +9,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * Используется для отработки событий нажатия на кнопки JButton
+ * Используется для отработки событий нажатия на кнопки типа JButton
  * Created by max on 02.09.14.
  */
 public class ActionListners implements ActionListener{
 
+    private static final String LOG_TAG = ActionListners.class.getName();
     private AudioPreprocessor audioPreproc;
     private FileUtils fileUtils;
 
@@ -27,10 +28,9 @@ public class ActionListners implements ActionListener{
     }
 
 
-
     /**
      * Общий слушатель событий для всех кнопок главной формы
-     * @param e
+     * @param e - генрируемре событие нажатие на кнопку
      */
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -46,7 +46,10 @@ public class ActionListners implements ActionListener{
 
     }
 
-
+    /**
+     * Обработка события кнопок JButton
+     * @param jbtn - кнопка, сгенерировавшая событие нажатие
+     */
     private void jButtonAction(JButton jbtn){
         if (jbtn.getActionCommand().equals(Const.ButtonProps.PLAY)){
             audioPreproc.play();
@@ -78,6 +81,10 @@ public class ActionListners implements ActionListener{
         }
     }
 
+    /**
+     * Обработка события кнопок JToogleButton
+     * @param jtbtn - кнопка с фиксированным нажатием, сгенерировавшая событие нажатие
+     */
     private void jToggleButtonAction(JToggleButton jtbtn){
         if (jtbtn.getActionCommand().equals(Const.ButtonProps.MONO_STEREO)){
             System.out.println("toggle button mono presed = " + Const.ButtonProps.MONO_STEREO);

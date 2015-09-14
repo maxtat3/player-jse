@@ -1,13 +1,16 @@
 package player;
 
 import app.Const;
+import gui.AllJComp;
 import gui.MainFrameV1;
 import javazoom.jlgui.basicplayer.BasicController;
 import javazoom.jlgui.basicplayer.BasicPlayerEvent;
 import javazoom.jlgui.basicplayer.BasicPlayerListener;
 import utils.FileUtils;
 
+import javax.swing.*;
 import java.util.*;
+import java.util.logging.Logger;
 
 
 /**
@@ -15,9 +18,9 @@ import java.util.*;
  */
 public class AudioPreprocessor implements BasicPlayerListener{
 
-    private static final String LOG_TAG = AudioPreprocessor.class.getName() + ": ";
+    private static final Logger LOG = Logger.getLogger(AudioPreprocessor.class.getName());
 
-    private MainFrameV1 mainFrame;
+    private AllJComp mainFrame;
     private FileUtils fileUtils;
 
     private Player player = new Player(this);
@@ -25,21 +28,21 @@ public class AudioPreprocessor implements BasicPlayerListener{
     private long durSongSec; //длительность песни (в секундах)
     private int durSongBytes; //длительность песни (в Байтах)
     private long amountSec; // сколько прошло с момента проигрывания (секунд)
-    private double positionValue; // текущая позиция для прокрутки  [0 ... 1000]
-    private String songName = Const.EMPTY_STR; // имя песни отображаемое в gui
+    private double posValue; // текущая позиция для прокрутки  [0 ... 1000]
+    private String songName = Const.SpecSym.EMPTY_STR; // имя песни отображаемое в gui
 
     private boolean movJslProgressAuto = false; // флаг - передвижения ползунка автоматически при проигрывании песни
     private boolean movJslProgressMan = false; // флаг - пользователь передвигает ползунок вручную (во время проигрывания)
 
-    private String playTimeTmp = Const.EMPTY_STR; //
+    private String playTimeTmp = Const.SpecSym.EMPTY_STR; //
 
 
-    public AudioPreprocessor(MainFrameV1 mainFrame, FileUtils fileUtils) {
+    public AudioPreprocessor(AllJComp mainFrame, FileUtils fileUtils) {
         this.mainFrame = mainFrame;
         this.fileUtils = fileUtils;
     }
 
-    public AudioPreprocessor(MainFrameV1 mainFrame) {
+    public AudioPreprocessor(AllJComp mainFrame) {
         this.mainFrame = mainFrame;
     }
 
@@ -53,12 +56,12 @@ public class AudioPreprocessor implements BasicPlayerListener{
     }
 
 
-    public double getPositionValue() {
-        return positionValue;
+    public double getPosValue() {
+        return posValue;
     }
 
-    public void setPositionValue(double positionValue) {
-        this.positionValue = positionValue;
+    public void setPosValue(double posValue) {
+        this.posValue = posValue;
     }
 
 
@@ -168,7 +171,7 @@ public class AudioPreprocessor implements BasicPlayerListener{
         durSongSec = Math.round( ((Long) properties.get(Const.TagKey.DURATION)) / 1000000 );
         durSongBytes = Math.round( ( (Integer) properties.get(Const.TagKey.BYTES) ).intValue() );
 
-        setTagInform(properties);
+//        setTagInform(properties);
 
 //        Устанавливаем имя проигрываемого файла в label
 
@@ -184,7 +187,7 @@ public class AudioPreprocessor implements BasicPlayerListener{
 //        }
 
 //        ВАРИАНТ 2 - определяется полное имя файла
-        if ( !songName.equals(Const.EMPTY_STR) ){
+        if ( !songName.equals(Const.SpecSym.EMPTY_STR) ){
             doReduceLengthString(songName, Const.LabelProps.MAX_SONG_NAME_LENGTH);
         } else {
             songName = Const.LabelProps.UNKN;
@@ -214,7 +217,7 @@ public class AudioPreprocessor implements BasicPlayerListener{
         if ( durSongSec != 0 ){
             if (!movJslProgressMan){ // если пользователь не передвигает ползунок (т.е. он двигается сам)
                 // устанавливаем значение, для авто передвижения во время проигрывания
-                mainFrame.getJslRewindProgress().setValue( Math.round((amountSec * Const.SliderProps.REWIND_PROGRESS_RESOL) / durSongSec) );
+                mainFrame.getJslRewindProgress().setValue( Math.round((amountSec * Const.SliderProps.PROGRESS_RESOL) / durSongSec) );
             }
         }
 
@@ -243,10 +246,8 @@ public class AudioPreprocessor implements BasicPlayerListener{
 
         } else if (state == BasicPlayerEvent.SEEKING){ // если состояние playerа - перемотка
             movJslProgressMan = true; // устанавливам флаг ручного передвижения ползунка
-            System.out.println("BasicPlayerEvent.SEEKING");
 
         } else if (state == BasicPlayerEvent.EOM){
-            System.out.println("BasicPlayerEvent.EOM");
             if (selectNextSong()){
                 play();
             }
@@ -254,7 +255,7 @@ public class AudioPreprocessor implements BasicPlayerListener{
         } else if (state == BasicPlayerEvent.STOPPED){
             mainFrame.getjLabelPlayerState().setForeground(new java.awt.Color(Const.Color.BLUE));
             mainFrame.getjLabelPlayerState().setText(Const.LabelProps.PLAYER_STATE_STOP);
-            setTagInform(emptyProp());
+//            setTagInform(emptyProp());
 
         } else if (state == BasicPlayerEvent.PAUSED){
             mainFrame.getjLabelPlayerState().setForeground(new java.awt.Color(Const.Color.GREY));
@@ -271,6 +272,7 @@ public class AudioPreprocessor implements BasicPlayerListener{
     }
 
 
+    private boolean repeat = true; //вместо этого поля, инф должна братся из кнопки jtbtn
     /**
      * Выбор следующей песни в playlist.
      * Метод вызывается в собыеиях плеера see {@link #stateUpdated(BasicPlayerEvent)}
@@ -281,6 +283,25 @@ public class AudioPreprocessor implements BasicPlayerListener{
         int nextSongIndex = mainFrame.getjList1().getSelectedIndex() + 1; // nextSongIndex - индексы в jlist начинаются с нуля
         if (nextSongIndex > 0) {
             mainFrame.getjList1().setSelectedIndex(nextSongIndex);
+
+            if (repeat){ //повторять playlist ?
+                return true;
+            } else {
+                if (isEndPlylist(nextSongIndex)){
+                    return false;
+                }
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Проверяем конец ли playlist
+     * @return  true - конец playlist
+     */
+    private boolean isEndPlylist(int nextIndex){
+        if(nextIndex == mainFrame.getPlayListModel().size()){
             return true;
         }
         return false;
@@ -306,6 +327,12 @@ public class AudioPreprocessor implements BasicPlayerListener{
      * Начать воспроизведение выбранной песни в playlist
      */
     public void play(){
+        //проверка - не пустой ли playlist ?
+        if (mainFrame.getPlayListModel().size() == 0){
+            LOG.info("playlist is empty");
+            return;
+        }
+
         // Проверяем активность случайного выбора песни.
         // генерация случайного значения в диапазоне [0, число песен в playlist -1]
         // min = 0 - потому индекс самой первой песни в playlist = 0
@@ -321,7 +348,7 @@ public class AudioPreprocessor implements BasicPlayerListener{
             }
         }
 
-        // Если не выбрано ни одной песни, выбираем самую первую  (с индексом = 0  в playlist)
+        // Если в playlist не выбрано ни одной песни, выбираем самую первую  (с индексом = 0  в playlist)
         if (mainFrame.getjList1().getSelectedIndices().length == 0){
             mainFrame.getjList1().setSelectedIndex(0);
         }
@@ -402,10 +429,12 @@ public class AudioPreprocessor implements BasicPlayerListener{
 
 
     /**
-     * Установка дополнительных параметров из тегов
+     * Установка дополнительных параметров из тегов на информ. панель
      * @param prop - карта тегов с дополнительныйми параметрами
      */
     private void setTagInform(Map prop) {
+        ToolTipManager.sharedInstance().setDismissDelay(10000); //устанавливаем время отображение для подсказок
+
         mainFrame.getjLabelTitle().setText(doReduceLengthString((String) prop.get(Const.TagKey.TITLE), Const.LabelProps.MAX_TAG_LENGTH));
         mainFrame.getjLabelTitle().setToolTipText(Const.LabelProps.TITLE_HEADER + prop.get(Const.TagKey.TITLE));
 
@@ -421,21 +450,97 @@ public class AudioPreprocessor implements BasicPlayerListener{
         mainFrame.getjLabelGenre().setText(doReduceLengthString((String) prop.get(Const.TagKey.GENRE), Const.LabelProps.MAX_TAG_LENGTH));
         mainFrame.getjLabelGenre().setToolTipText(Const.LabelProps.GENRE_HEADER + prop.get(Const.TagKey.GENRE));
 
+        //обработка комментариев
+        final int CLL = 45; //Comment Line Length - длина одной строки (из трех) комментария в gui
+
+        final int COM1L = 0; //левый диапазон строки №1 в gui
+        final int COM1R = CLL; //правый диапазон строки №1 в gui
+
+        final int COM2L = COM1R; //левый диапазон строки №2 в gui
+        final int COM2R = COM2L + CLL; //правый диапазон строки №2 в gui
+
+        final int COM3L = COM2R; //левый диапазон строки №3 в gui
+        final int COM3R = COM3L + CLL; //правый диапазон строки №3 в gui
+
+        String comment = prop.get(Const.TagKey.COMMENT).toString();
+        int commentLen = comment.length();
+//        LOG.info("_______" + "comment length = " + comment.length());
+
+        if (comment.length() > 0){
+            if (commentLen <= COM1R){
+                mainFrame.getjLabelCommentLine1().setText( comment );
+                mainFrame.getjLabelCommentLine2().setText( Const.SpecSym.DOT );
+                mainFrame.getjLabelCommentLine3().setText( Const.SpecSym.DOT );
+
+                mainFrame.getjLabelCommentLine1().setToolTipText( comment );
+                mainFrame.getjLabelCommentLine2().setToolTipText( comment );
+                mainFrame.getjLabelCommentLine3().setToolTipText( comment );
+
+            } else if (commentLen <= COM2R){
+                mainFrame.getjLabelCommentLine1().setText( comment.substring(COM1L, COM1R) );
+                mainFrame.getjLabelCommentLine2().setText( comment.substring(COM2L, commentLen) );
+                mainFrame.getjLabelCommentLine3().setText( Const.SpecSym.DOT );
+
+                mainFrame.getjLabelCommentLine1().setToolTipText( comment );
+                mainFrame.getjLabelCommentLine2().setToolTipText( comment );
+                mainFrame.getjLabelCommentLine3().setToolTipText( comment );
+
+            } else if (commentLen <= COM3R){
+                mainFrame.getjLabelCommentLine1().setText( comment.substring(COM1L, COM1R) );
+                mainFrame.getjLabelCommentLine2().setText( comment.substring(COM2L, COM2R) );
+                mainFrame.getjLabelCommentLine3().setText( comment.substring(COM3L, commentLen) );
+
+                mainFrame.getjLabelCommentLine1().setToolTipText( comment );
+                mainFrame.getjLabelCommentLine2().setToolTipText( comment );
+                mainFrame.getjLabelCommentLine3().setToolTipText( comment );
+
+            } else {
+                mainFrame.getjLabelCommentLine1().setText( comment.substring(COM1L, COM1R) );
+                mainFrame.getjLabelCommentLine2().setText( comment.substring(COM2L, COM2R) );
+                mainFrame.getjLabelCommentLine3().setText( comment.substring(COM3L, COM3R) );
+
+//                формируем всплывающую подсказку для тображения комментария, длина которго > COM3R
+                String toolTip = "<html>";
+                final int MINI_STR = 55;
+
+                for (int i = 0; i < commentLen; i = i + MINI_STR) {
+                    if (i == 0){
+                        toolTip += comment.substring(i, i + MINI_STR);
+                        toolTip += "<br>";
+
+                    }else if (i >= commentLen - MINI_STR){
+                        toolTip += comment.substring(i , commentLen);
+                        toolTip += "<br>";
+
+                    }else {
+                        toolTip += comment.substring(i, i + MINI_STR);
+                        toolTip += "<br>";
+                    }
+                }
+
+                toolTip += "</html>";
+
+                mainFrame.getjLabelCommentLine1().setToolTipText(toolTip);
+                mainFrame.getjLabelCommentLine2().setToolTipText(toolTip);
+                mainFrame.getjLabelCommentLine3().setToolTipText(toolTip);
+            }
+        }
+
 
         mainFrame.getjLabelSampleRate().setText(
-                !prop.get(Const.TagKey.SAMPLE_RATE).toString().equals(Const.LabelProps.EMPTY_FIELD_DOT) ?
-                        div(prop.get(Const.TagKey.SAMPLE_RATE).toString(), Format.DOUBLE, 1000) + " Hz" :
-                        Const.LabelProps.EMPTY_FIELD_DOT
+                !prop.get(Const.TagKey.SAMPLE_RATE).toString().equals(Const.SpecSym.DOT) ?
+                        div(prop.get(Const.TagKey.SAMPLE_RATE).toString(), Format.DOUBLE, 1000) + Const.LabelProps.KHZ :
+                        Const.SpecSym.DOT
         );
 
         mainFrame.getjLabelBitRate().setText(
-                !prop.get(Const.TagKey.BITRATE).toString().equals(Const.LabelProps.EMPTY_FIELD_DOT) ?
-                        div(prop.get(Const.TagKey.BITRATE).toString(), Format.INT, 1000) + " kbps" :
-                        Const.LabelProps.EMPTY_FIELD_DOT
+                !prop.get(Const.TagKey.BITRATE).toString().equals(Const.SpecSym.DOT) ?
+                        div(prop.get(Const.TagKey.BITRATE).toString(), Format.INT, 1000) + Const.LabelProps.KBPS :
+                        Const.SpecSym.DOT
         );
 
 
-        if ( !prop.get(Const.TagKey.CHANNELS).toString().equals(Const.LabelProps.EMPTY_FIELD_DOT) ){
+        if ( !prop.get(Const.TagKey.CHANNELS).toString().equals(Const.SpecSym.DOT) ){
             if (prop.get(Const.TagKey.CHANNELS).toString().equals("1")) {
                 mainFrame.getjLabelMonoStereoSound().setText(Const.LabelProps.MONO);
             } else if (prop.get(Const.TagKey.CHANNELS).toString().equals("2")) {
@@ -444,11 +549,12 @@ public class AudioPreprocessor implements BasicPlayerListener{
                 mainFrame.getjLabelMonoStereoSound().setText(Const.LabelProps.UNKN);
             }
         } else {
-            mainFrame.getjLabelMonoStereoSound().setText( Const.LabelProps.EMPTY_FIELD_DOT );
+            mainFrame.getjLabelMonoStereoSound().setText( Const.SpecSym.DOT);
         }
 
 
         mainFrame.getjLabelFileFormat().setText((String) prop.get(Const.TagKey.TYPE));
+
     }
 
 
@@ -515,11 +621,9 @@ public class AudioPreprocessor implements BasicPlayerListener{
      * @return - полная\уменьшенная строка
      */
     private String doReduceLengthString(String str, int maxLength){
-        System.out.println("str = " + str);
-        System.out.println("max length = " + maxLength);
         if ( str != null ){
             if (str.length() > maxLength){
-                return str.substring(0, maxLength) + Const.LabelProps.EMPTY_FIELD_THREE_DOT;
+                return str.substring(0, maxLength) + Const.SpecSym.THREE_DOT;
             }
         }
         return str;
@@ -533,15 +637,16 @@ public class AudioPreprocessor implements BasicPlayerListener{
     private Map<String, String> emptyProp(){
         Map<String, String> prop = new HashMap<String, String>();
 
-        prop.put(Const.TagKey.TITLE, Const.LabelProps.EMPTY_FIELD_DOT);
-        prop.put(Const.TagKey.ALBUM, Const.LabelProps.EMPTY_FIELD_DOT);
-        prop.put(Const.TagKey.YEAR, Const.LabelProps.EMPTY_FIELD_DOT);
-        prop.put(Const.TagKey.AUTHOR, Const.LabelProps.EMPTY_FIELD_DOT);
-        prop.put(Const.TagKey.GENRE, Const.LabelProps.EMPTY_FIELD_DOT);
-        prop.put(Const.TagKey.SAMPLE_RATE, Const.LabelProps.EMPTY_FIELD_DOT);
-        prop.put(Const.TagKey.BITRATE, Const.LabelProps.EMPTY_FIELD_DOT);
-        prop.put(Const.TagKey.CHANNELS, Const.LabelProps.EMPTY_FIELD_DOT);
-        prop.put(Const.TagKey.TYPE, Const.LabelProps.EMPTY_FIELD_DOT);
+        prop.put(Const.TagKey.TITLE, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.ALBUM, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.YEAR, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.AUTHOR, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.GENRE, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.SAMPLE_RATE, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.BITRATE, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.CHANNELS, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.TYPE, Const.SpecSym.DOT);
+        prop.put(Const.TagKey.COMMENT, Const.SpecSym.DOT);
 
         return prop;
     }
@@ -558,8 +663,6 @@ public class AudioPreprocessor implements BasicPlayerListener{
      * @return - случайное число в диапазоне [min, max] / код -1 т.е. все числа сгенерированы
      */
     private int randGen(int min, int max){
-        System.out.println("min = " + min);
-        System.out.println("max = " + max);
         int rand;
         boolean equal; //флаг совпадения сгенерированного числа и числа которое уже есть в хранилище
         if ( existRands.isEmpty() ){

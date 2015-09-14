@@ -6,7 +6,7 @@ import javax.swing.*;
 
 
 /**
- * Используемые компоненты
+ * Используемые компоненты для построения gui
  * JLabel
  * JButton
  * JToggleButton
@@ -66,7 +66,6 @@ public  class AllJComp extends JFrame implements GeneralFrame {
     protected JPanel jPanelPlaylistAndDirection; //
     protected JPanel jPanelVolAndProgress; //
 
-    protected JFileChooser jfch;
     protected DefaultListModel playListModel;
 
 
@@ -238,14 +237,9 @@ public  class AllJComp extends JFrame implements GeneralFrame {
 //    ============== JScrollPane ==============
 
     public JScrollPane getjScrollPane1() {
-        return jScrollPane1; // ??????????????????????????????????????????????
+        return jScrollPane1;
     }
 
-
-//    ============== JFileChooser ==============
-    public JFileChooser getJfch() {
-        return jfch;
-    }
 
 //    ============== DefaultListModel ==============
     public DefaultListModel getPlayListModel() {

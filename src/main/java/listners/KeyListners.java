@@ -1,6 +1,7 @@
 package listners;
 
 import app.Const;
+import gui.AllJComp;
 import gui.MainFrameV1;
 import player.AudioPreprocessor;
 import utils.Search;
@@ -9,22 +10,23 @@ import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+
 /**
  * Created by max on 19.09.14.
  */
 public class KeyListners extends KeyAdapter {
 
-    private MainFrameV1 mainFrame;
+    private AllJComp mainFrame;
     private AudioPreprocessor audioPreproc;
     private Search srch;
 
 
-    public KeyListners(MainFrameV1 mainFrame) {
+    public KeyListners(AllJComp mainFrame) {
         this.mainFrame = mainFrame;
         srch = new Search(mainFrame);
     }
 
-    public KeyListners(MainFrameV1 mainFrame, AudioPreprocessor audioPreproc) {
+    public KeyListners(AllJComp mainFrame, AudioPreprocessor audioPreproc) {
         this.mainFrame = mainFrame;
         this.audioPreproc = audioPreproc;
         srch = new Search(mainFrame);
@@ -34,17 +36,22 @@ public class KeyListners extends KeyAdapter {
     @Override
     public void keyPressed(KeyEvent e) {
 
-//        определяем комбинацию нажатых клавиш
-        int keyCode = e.getKeyCode();
-        System.out.println("key code = " + keyCode);
+        int keyCode = e.getKeyCode(); // получаем код нажатой клавиши
+//        System.out.println("key code = " + keyCode);
 
 //        проверяем какой это компонент
         if ( e.getSource() instanceof JTextField ){
             jTextFieldKeyPressed((JTextField) e.getSource(), keyCode);
         }
+//        else if (e.getSource() instanceof JList){
+//            if ( ((JList)e.getSource()).getName().equals(Const.ListProps.PLAYLIST_NAME) ) {
+//                if (keyCode == KeyEvent.VK_ENTER){
+//                    System.out.println("press ENTER in playlist");
+//                }
+//            }
+//        }
 
     }
-
 
     /**
      * Динамический поиск песен по playlist.

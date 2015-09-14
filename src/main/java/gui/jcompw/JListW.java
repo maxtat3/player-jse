@@ -3,6 +3,7 @@ package gui.jcompw;
 import listners.KeyListners;
 
 import javax.swing.*;
+import java.awt.event.MouseListener;
 
 /**
  * Created by max on 27.09.14.
@@ -43,4 +44,15 @@ public class JListW extends MainAttrAbstr {
         jList.addKeyListener(keyl);
     }
 
+    public void getTransferHandler(){
+        jList.getTransferHandler();
+    }
+
+    public void setTransferHandler(TransferHandler th){
+        jList.setTransferHandler(th);
+    }
+
+    public void addMouseListener(MouseListener ml){
+        jList.addMouseListener(ml);
+    }
 }
