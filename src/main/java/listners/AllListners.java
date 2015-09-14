@@ -1,23 +1,25 @@
 package listners;
 
-import gui.MainFrame;
+import gui.MainFrameV1;
 import player.AudioPreprocessor;
 import utils.FileUtils;
+
+import java.awt.*;
 
 /**
  * Created by max on 11.09.14.
  */
 public class AllListners {
 
-    private MainFrame mainFrame;
+    private MainFrameV1 mainFrame;
     private AudioPreprocessor audioPreproc;
     private FileUtils fileUtils;
 
-    public AllListners(MainFrame mainFrame, AudioPreprocessor audioPreproc, FileUtils fileUtils) {
+    public AllListners(MainFrameV1 mainFrame, AudioPreprocessor audioPreproc, FileUtils fileUtils) {
         this.mainFrame = mainFrame;
         this.audioPreproc = audioPreproc;
         this.fileUtils = fileUtils;
-        setButtonsListners();
+        setActionListners();
         setChangeListners();
         setKeyListners();
         setFocusAdapter();
@@ -27,7 +29,7 @@ public class AllListners {
     /**
      * Устанавливаем слушатели действий на кнопки главной формы MainFrame
      */
-    private ActionListners setButtonsListners(){
+    private ActionListners setActionListners() {
         ActionListners bal = new ActionListners(audioPreproc, fileUtils);
 
         mainFrame.getJbtnPlay().addActionListener(bal);
@@ -42,8 +44,8 @@ public class AllListners {
         mainFrame.getJbtnDown().addActionListener(bal);
         mainFrame.getJbtnTest().addActionListener(bal);
 
-        mainFrame.getJbtnMonoStereo().addActionListener(bal);
-        mainFrame.getJbtnMute().addActionListener(bal);
+        mainFrame.getJtbtnMonoStereo().addActionListener(bal);
+        mainFrame.getJtbtnMute().addActionListener(bal);
 
         return bal;
     }
@@ -61,11 +63,10 @@ public class AllListners {
     }
 
     private void setKeyListners(){
-        KeyListners keyl = new KeyListners(mainFrame);
+        mainFrame.getJtfLiveSearch().addKeyListener(new KeyListners(mainFrame, audioPreproc));
 
-        mainFrame.getJtfLiveSearch().addKeyListener(keyl);
-        mainFrame.getJtfTitle().addKeyListener(keyl);
-        mainFrame.getjList1().addKeyListener(keyl);
+        KeyboardFocusManager keybrdfm = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+        keybrdfm.addKeyEventDispatcher(new KeyDispatcher(mainFrame, audioPreproc, fileUtils));
     }
 
     private void setFocusAdapter(){

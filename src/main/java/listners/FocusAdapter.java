@@ -1,6 +1,7 @@
 package listners;
 
-import gui.MainFrame;
+import app.Const;
+import gui.MainFrameV1;
 
 import javax.swing.*;
 import java.awt.event.FocusEvent;
@@ -10,10 +11,10 @@ import java.awt.event.FocusEvent;
  */
 public class FocusAdapter extends java.awt.event.FocusAdapter {
 
-    private MainFrame mainFrame;
+    private MainFrameV1 mainFrame;
 
 
-    public FocusAdapter(MainFrame mainFrame) {
+    public FocusAdapter(MainFrameV1 mainFrame) {
         this.mainFrame = mainFrame;
     }
 
@@ -26,8 +27,8 @@ public class FocusAdapter extends java.awt.event.FocusAdapter {
 
         JTextField jtf = (JTextField) e.getSource();
 
-        if (jtf.getName().equals("liveSearch")){
-            mainFrame.getJtfLiveSearch().setText("");
+        if (jtf.getName().equals(Const.TextFieldProps.LIVE_SEARCH_NAME)){
+            mainFrame.getJtfLiveSearch().setText(Const.EMPTY_STR);
         }
     }
 
@@ -39,8 +40,8 @@ public class FocusAdapter extends java.awt.event.FocusAdapter {
 
         JTextField jtf = (JTextField) e.getSource();
 
-        if (jtf.getName().equals("liveSearch")){
-            mainFrame.getJtfLiveSearch().setText("live search");
+        if (jtf.getName().equals(Const.TextFieldProps.LIVE_SEARCH_NAME)){
+            mainFrame.getJtfLiveSearch().setText(Const.TextFieldProps.LIVE_SEARCH_DEFAULT_TEXT);
         }
     }
 

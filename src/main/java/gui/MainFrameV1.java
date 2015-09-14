@@ -3,23 +3,19 @@ package gui;
 import app.Const;
 
 import javax.swing.*;
+import java.awt.*;
 
 
 /**
  * Created by max on 23.09.14.
  */
-public class MainFrameV1 extends AllComponents {
-
-    private JFileChooser jfch;
-    private DefaultListModel playListModel;
-
+public class MainFrameV1 extends AllJComp {
 
     public MainFrameV1() {
         createJComponents();
         setJPanels();
         setJCompProps();
 
-        jfch = addFileChooser();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     }
 
@@ -96,6 +92,12 @@ public class MainFrameV1 extends AllComponents {
         jPanelInformation = new JPanel();
         jPanelPlaylistAndDirection = new JPanel();
         jPanelVolAndProgress = new JPanel();
+
+        // create file chooser for choose audio files and add to this player
+        jfch = addFileChooser();
+
+        // create playlist model, for main playlist this player
+        playListModel = new DefaultListModel();
     }
 
     /**
@@ -251,7 +253,7 @@ public class MainFrameV1 extends AllComponents {
                                                 .addGap(0, 0, Short.MAX_VALUE)
                                                 .addGroup(jPanelPlaylistAndDirectionLayout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                                                         .addComponent(jtfLiveSearch, GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
-                                                        .addComponent(jScrollPane1))
+                                                        .addComponent(jScrollPane1, Const.Size.SCROLL_PANE_WIDTH, Const.Size.SCROLL_PANE_WIDTH, Const.Size.SCROLL_PANE_WIDTH))  //добавлены размеры из Const
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addGroup(jPanelPlaylistAndDirectionLayout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                                         .addComponent(jbtnTest, GroupLayout.Alignment.TRAILING, GroupLayout.PREFERRED_SIZE, 63, GroupLayout.PREFERRED_SIZE)
@@ -287,7 +289,7 @@ public class MainFrameV1 extends AllComponents {
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jbtnTest, GroupLayout.PREFERRED_SIZE, 53, GroupLayout.PREFERRED_SIZE))
                                         .addGroup(jPanelPlaylistAndDirectionLayout.createSequentialGroup()
-                                                .addComponent(jScrollPane1, GroupLayout.PREFERRED_SIZE, 256, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jScrollPane1, Const.Size.SCROLL_PANE_HEIGHT, Const.Size.SCROLL_PANE_HEIGHT, Const.Size.SCROLL_PANE_HEIGHT) //добавлены размеры из Const
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(jtfLiveSearch, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)))
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -298,6 +300,8 @@ public class MainFrameV1 extends AllComponents {
 
     /**
      * системная компоновочная панель
+     * Здесь также добавлена аозможность изменения размеров всех панелей
+     * Это делается из see {@link Const.Size}
      */
     public void setGeneralPanel() {
         GroupLayout layout = new GroupLayout(getContentPane());
@@ -310,10 +314,10 @@ public class MainFrameV1 extends AllComponents {
                                         .addComponent(jLabelFileName, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                         .addGroup(layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                                        .addComponent(jPanelVolAndProgress, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-                                                        .addComponent(jPanelInformation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                                        .addComponent(jPanelVolAndProgress, Const.Size.PANEL_VOLPROGRESS_WIDTH, GroupLayout.DEFAULT_SIZE, Const.Size.PANEL_VOLPROGRESS_WIDTH) //добавлены размеры из Const
+                                                        .addComponent(jPanelInformation, Const.Size.PANEL_INFORM_WIDTH, GroupLayout.DEFAULT_SIZE, Const.Size.PANEL_INFORM_WIDTH))  //добавлены размеры из Const
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jPanelPlaylistAndDirection, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jPanelPlaylistAndDirection, Const.Size.PANEL_PLAYLISTDIR_WIDTH, GroupLayout.DEFAULT_SIZE, Const.Size.PANEL_PLAYLISTDIR_WIDTH) //добавлены размеры из Const
                                                 .addGap(0, 0, Short.MAX_VALUE)))
                                 .addContainerGap())
         );
@@ -325,10 +329,10 @@ public class MainFrameV1 extends AllComponents {
                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING, false)
                                         .addGroup(layout.createSequentialGroup()
-                                                .addComponent(jPanelInformation, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jPanelInformation, Const.Size.PANEL_INFORM_HEIGHT, GroupLayout.DEFAULT_SIZE, Const.Size.PANEL_INFORM_HEIGHT) //добавлены размеры из Const
                                                 .addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(jPanelVolAndProgress, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addComponent(jPanelPlaylistAndDirection, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+                                                .addComponent(jPanelVolAndProgress, Const.Size.PANEL_VOLPROGRESS_HEIGHT, GroupLayout.DEFAULT_SIZE, Const.Size.PANEL_VOLPROGRESS_HEIGHT)) //добавлены размеры из Const
+                                        .addComponent(jPanelPlaylistAndDirection, Const.Size.PANEL_PLAYLISTDIR_HEIGHT, GroupLayout.DEFAULT_SIZE, Const.Size.PANEL_PLAYLISTDIR_HEIGHT)) //добавлены размеры из Const
                                 .addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }
@@ -342,123 +346,123 @@ public class MainFrameV1 extends AllComponents {
         // -----------------
         // JLabel properties
         // -----------------
-        jLabelFileName.setFont(new java.awt.Font("DejaVu Sans", 0, 14)); // NOI18N
-        jLabelFileName.setText("Название проигрываемого файла: В.А. Моцарт - концерт №2 до-мажор.mp3"); //@_______Test
+        jLabelFileName.setFont( new Font(Const.Font.DEJAVU_SANS, Font.PLAIN, 14) ); // NOI18N
+        jLabelFileName.setText(Const.LabelProps.EMPTY_FIELD_NOT_SONG);
 
-        jLabelPlaybackTime.setFont(new java.awt.Font("DejaVu Sans", 0, 20)); // NOI18N
-        jLabelPlaybackTime.setText("125:35"); //@_______Test
+        jLabelPlaybackTime.setFont( new Font(Const.Font.DEJAVU_SANS, Font.PLAIN, 20) ); // NOI18N
+        jLabelPlaybackTime.setText(Const.LabelProps.EMPTY_FIELD_NOT_TIME);
 
-        jLabelSepTime.setFont(new java.awt.Font("DejaVu Sans", 0, 20)); // NOI18N
-        jLabelSepTime.setText(Const.LabelNames.SEPARATOR);
+        jLabelSepTime.setFont( new Font(Const.Font.DEJAVU_SANS, Font.PLAIN, 20) ); // NOI18N
+        jLabelSepTime.setText(Const.LabelProps.SEPARATOR);
 
-        jLabelTotalTime.setFont(new java.awt.Font("DejaVu Sans", 0, 20)); // NOI18N
-        jLabelTotalTime.setText("135:31"); //@_______Test
+        jLabelTotalTime.setFont(new Font(Const.Font.DEJAVU_SANS, Font.PLAIN, 20)); // NOI18N
+        jLabelTotalTime.setText(Const.LabelProps.EMPTY_FIELD_NOT_TIME);
 
-        jLabelPlayerState.setFont(new java.awt.Font("DejaVu Sans", 1, 18)); // NOI18N
-        jLabelPlayerState.setForeground(new java.awt.Color(102, 102, 102));
-        jLabelPlayerState.setText(Const.LabelNames.PLAYER_STATE_PLAY); //@_______Test
+        jLabelPlayerState.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 18)); // NOI18N
+        jLabelPlayerState.setText(Const.LabelProps.EMPTY_FIELD_DOT);
+        jLabelPlayerState.setForeground(new Color(Const.Color.GREY)); // default color
 
-        jLabelMonoStereoSound.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
-        jLabelMonoStereoSound.setText(Const.LabelNames.MONO); //@_______Test
+        jLabelMonoStereoSound.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 14)); // NOI18N
+        jLabelMonoStereoSound.setText(Const.LabelProps.EMPTY_FIELD_DOT);
 
-        jLabelSampleRate.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
-        jLabelSampleRate.setText("44100 Hz"); //@_______Test
+        jLabelSampleRate.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 14)); // NOI18N
+        jLabelSampleRate.setText(Const.LabelProps.EMPTY_FIELD_DOT);
 
-        jLabelBitRate.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
-        jLabelBitRate.setText("160 kbps"); //@_______Test
+        jLabelBitRate.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 14)); // NOI18N
+        jLabelBitRate.setText(Const.LabelProps.EMPTY_FIELD_DOT);
 
-        jLabelFileFormat.setFont(new java.awt.Font("DejaVu Sans", 1, 14)); // NOI18N
-        jLabelFileFormat.setText("flac"); //@_______Test
+        jLabelFileFormat.setFont(new Font(Const.Font.DEJAVU_SANS, Font.BOLD, 14)); // NOI18N
+        jLabelFileFormat.setText(Const.LabelProps.EMPTY_FIELD_DOT);
 
-        jLabelTitle.setText(Const.LabelNames.TITLE_HEADER);
+        jLabelTitle.setText(Const.LabelProps.TITLE_HEADER); //default value, view in start app
 
-        jLabelAuthor.setText(Const.LabelNames.AUTHOR_HEADER);
+        jLabelAuthor.setText(Const.LabelProps.AUTHOR_HEADER); //default value, view in start app
 
-        jLabelAlbum.setText(Const.LabelNames.ALBUM_HEADER);
+        jLabelAlbum.setText(Const.LabelProps.ALBUM_HEADER); //default value, view in start app
 
-        jLabelGenre.setText(Const.LabelNames.GENRE_HEADER);
+        jLabelGenre.setText(Const.LabelProps.GENRE_HEADER); //default value, view in start app
 
-        jLabelYear.setText(Const.LabelNames.YEAR_HEADER);
+        jLabelYear.setText(Const.LabelProps.YEAR_HEADER); //default value, view in start app
 
-        jLabelCommentLine1.setText(Const.LabelNames.COMMENT_HEADER);
+        jLabelCommentLine1.setText(Const.LabelProps.COMMENT_HEADER); //default value, view in start app
 
-        jLabelCommentLine2.setText("."); //@_______Test
+        jLabelCommentLine2.setText(Const.LabelProps.EMPTY_FIELD_DOT);
 
-        jLabelCommentLine3.setText("."); //@_______Test
+        jLabelCommentLine3.setText(Const.LabelProps.EMPTY_FIELD_DOT);
 
 
         // ------------------
         // JButton properties
         // ------------------
-        jbtnPlay.setText(Const.ButtonNames.PLAY);
-        jbtnPlay.setName(Const.ButtonNames.PLAY);
+        jbtnPlay.setText(Const.ButtonProps.PLAY);
+        jbtnPlay.setName(Const.ButtonProps.PLAY);
 
-        jbtPause.setText(Const.ButtonNames.PAUSE);
-        jbtPause.setName(Const.ButtonNames.PAUSE);
+        jbtPause.setText(Const.ButtonProps.PAUSE);
+        jbtPause.setName(Const.ButtonProps.PAUSE);
 
-        jbtnStop.setText(Const.ButtonNames.STOP);
-        jbtnStop.setName(Const.ButtonNames.STOP);
+        jbtnStop.setText(Const.ButtonProps.STOP);
+        jbtnStop.setName(Const.ButtonProps.STOP);
 
-        jbtnPrev.setText(Const.ButtonNames.PREV_SONG);
-        jbtnPrev.setName(Const.ButtonNames.PREV_SONG);
+        jbtnPrev.setText(Const.ButtonProps.PREV_SONG);
+        jbtnPrev.setName(Const.ButtonProps.PREV_SONG);
 
-        jbtnNext.setText(Const.ButtonNames.NEXT_SONG);
-        jbtnNext.setName(Const.ButtonNames.NEXT_SONG);
-
-
-        jbtnAdd.setText(Const.ButtonNames.ADD);
-        jbtnAdd.setName(Const.ButtonNames.ADD);
-
-        jbtnRemove.setText(Const.ButtonNames.REMOVE);
-        jbtnRemove.setName(Const.ButtonNames.REMOVE);
-
-        jbtnUp.setText(Const.ButtonNames.UP);
-        jbtnUp.setName(Const.ButtonNames.UP);
-
-        jbtnDown.setText(Const.ButtonNames.DOWN);
-        jbtnDown.setName(Const.ButtonNames.DOWN);
+        jbtnNext.setText(Const.ButtonProps.NEXT_SONG);
+        jbtnNext.setName(Const.ButtonProps.NEXT_SONG);
 
 
-        jtbtnRandomPlaying.setText(Const.ButtonNames.RANDOM_PLAYING);
-        jtbtnRandomPlaying.setName(Const.ButtonNames.RANDOM_PLAYING);
+        jbtnAdd.setText(Const.ButtonProps.ADD);
+        jbtnAdd.setName(Const.ButtonProps.ADD);
 
-        jtbtnMute.setText(Const.ButtonNames.MUTE);
-        jtbtnMute.setName(Const.ButtonNames.MUTE);
+        jbtnRemove.setText(Const.ButtonProps.REMOVE);
+        jbtnRemove.setName(Const.ButtonProps.REMOVE);
 
-        jtbtnMonoStereo.setText(Const.ButtonNames.MONO_STEREO);
-        jtbtnMonoStereo.setName(Const.ButtonNames.MONO_STEREO);
+        jbtnUp.setText(Const.ButtonProps.UP);
+        jbtnUp.setName(Const.ButtonProps.UP);
 
+        jbtnDown.setText(Const.ButtonProps.DOWN);
+        jbtnDown.setName(Const.ButtonProps.DOWN);
 
-        jbtnSetting.setText(Const.ButtonNames.SETTING);
-        jbtnSetting.setName(Const.ButtonNames.SETTING);
-        jbtnSetting.setFont(new java.awt.Font("DejaVu Sans", 2, 12)); // NOI18N
+        // JToggleButton
+        jtbtnRandomPlaying.setText(Const.ButtonProps.RANDOM_PLAYING);
+        jtbtnRandomPlaying.setName(Const.ButtonProps.RANDOM_PLAYING);
 
+        jtbtnMute.setText(Const.ButtonProps.MUTE);
+        jtbtnMute.setName(Const.ButtonProps.MUTE);
 
-        jbtnTest.setText("tst"); //@_______Test
-        jbtnTest.setName("tst"); //@_______Test
+        jtbtnMonoStereo.setText(Const.ButtonProps.MONO_STEREO);
+        jtbtnMonoStereo.setName(Const.ButtonProps.MONO_STEREO);
+        // ------------
+
+        jbtnSetting.setText(Const.ButtonProps.SETTING);
+        jbtnSetting.setName(Const.ButtonProps.SETTING);
+        jbtnSetting.setFont(new Font(Const.Font.DEJAVU_SANS, Font.ITALIC, 12)); // NOI18N
+
+        // TODO - имя для тестовой кнопки
+        jbtnTest.setText("tst");
+        jbtnTest.setName("tst");
 
 
         // ------------------
         // JTextfield properties
         // ------------------
-        jtfLiveSearch.setText(Const.TextFieldTxt.LIVE_SEARCH_DEFAULT_TEXT);
-        jtfLiveSearch.setName(Const.TextFieldTxt.LIVE_SEARCH_NAME);
+        jtfLiveSearch.setText(Const.TextFieldProps.LIVE_SEARCH_DEFAULT_TEXT);
+        jtfLiveSearch.setName(Const.TextFieldProps.LIVE_SEARCH_NAME);
 
 
         // ------------------
         // JSlider properties
         // ------------------
-        jslVolume.setToolTipText(Const.SliderTxt.VOLUME_DEFAULT_TOOLTIP);
-        jslVolume.setName(Const.SliderTxt.VOLUME_NAME);
-        jslVolume.setMaximum(Const.SliderTxt.VOLUME_MAXVALUE);
-        jslVolume.setValue(5);
+        jslVolume.setToolTipText(Const.SliderProps.VOLUME_DEFAULT_TOOLTIP);
+        jslVolume.setName(Const.SliderProps.VOLUME_NAME);
+        jslVolume.setMaximum(Const.SliderProps.VOLUME_MAXVALUE);
+        jslVolume.setValue(Const.SliderProps.VOLUME_DEFAULT_VALUE);
         jslVolume.setMinorTickSpacing(0); // установка шага регулирования
         jslVolume.setSnapToTicks(true);
 
-        jslRewindProgress.setToolTipText(Const.SliderTxt.REWIND_PROGRESS_DEFAULT_TOOLTIP);
-        jslRewindProgress.setName(Const.SliderTxt.VOLUME_NAME);
-        jslRewindProgress.setMaximum(Const.SliderTxt.REWIND_PROGRESS_MAXVALUE);
-        jslRewindProgress.setValue(0); // начальное значение всегда = 0
+        jslRewindProgress.setToolTipText(Const.SliderProps.REWIND_PROGRESS_DEFAULT_TOOLTIP);
+        jslRewindProgress.setName(Const.SliderProps.REWIND_PROGRESS_NAME);
+        jslRewindProgress.setMaximum(Const.SliderProps.REWIND_PROGRESS_MAXVALUE);
+        jslRewindProgress.setValue(Const.SliderProps.REWIND_PROGRESS_DEFAULT_VALUE); // начальное значение всегда = 0
         jslRewindProgress.setMinorTickSpacing(1); // установка шага регулирования
         jslRewindProgress.setSnapToTicks(true);
 
@@ -471,13 +475,14 @@ public class MainFrameV1 extends AllComponents {
 //            public int getSize() { return strings.length; }
 //            public Object getElementAt(int i) { return strings[i]; }
 //        });
-        playListModel = new DefaultListModel();
+
         jList1.setModel(playListModel);
+        jList1.setName(Const.ListProps.PLAYLIST_NAME);
+
+        // jScrollPane1 properties
         jScrollPane1.setViewportView(jList1);
+//        jScrollPane1.setMaximumSize(new Dimension(300, 250));
 
-
-
-//        jbtnDown1.setText("dwn");
 
         pack();
     }
@@ -489,10 +494,13 @@ public class MainFrameV1 extends AllComponents {
     private JFileChooser addFileChooser() {
         JFileChooser fc = new JFileChooser();
         fc.setAcceptAllFileFilterUsed(true);
-        fc.setDialogTitle(Const.FileChooserTxt.DIALOG_TITLE);
+        fc.setDialogTitle(Const.FileChooserProps.DIALOG_TITLE);
         fc.setMultiSelectionEnabled(true);
         return fc;
     }
+
+
+
 
 
 }

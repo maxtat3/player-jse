@@ -27,56 +27,66 @@ public class ActionListners implements ActionListener{
     }
 
 
+
     /**
      * Общий слушатель событий для всех кнопок главной формы
      * @param e
      */
     @Override
     public void actionPerformed(ActionEvent e) {
-        if ( !(e.getSource() instanceof JButton) ){
-            return;
+        if ( e.getSource() instanceof JButton ){
+            JButton jbtn = (JButton) e.getSource();
+            jButtonAction(jbtn);
+        } else if ( e.getSource() instanceof JToggleButton ){
+            JToggleButton jtbtn = (JToggleButton) e.getSource();
+            jToggleButtonAction(jtbtn);
+        } else {
+            System.out.println("is not button and toggle button");
         }
 
-        JButton jbtn = (JButton)e.getSource();
+    }
 
-        if (jbtn.getActionCommand().equals(Const.ButtonNames.PLAY)){
+
+    private void jButtonAction(JButton jbtn){
+        if (jbtn.getActionCommand().equals(Const.ButtonProps.PLAY)){
             audioPreproc.play();
 
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.PAUSE)){
+        } else if (jbtn.getActionCommand().equals(Const.ButtonProps.PAUSE)){
             audioPreproc.pause();
 
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.STOP)){
+        } else if (jbtn.getActionCommand().equals(Const.ButtonProps.STOP)){
             audioPreproc.stop();
 
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.PREV_SONG)){
+        } else if (jbtn.getActionCommand().equals(Const.ButtonProps.PREV_SONG)){
             audioPreproc.playPreviousSong();
 
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.NEXT_SONG)){
+        } else if (jbtn.getActionCommand().equals(Const.ButtonProps.NEXT_SONG)){
             audioPreproc.playNextSong();
 
 
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.ADD)){
-//            fileUtils.addSongToPlayList();
+        } else if (jbtn.getActionCommand().equals(Const.ButtonProps.ADD)){
+            fileUtils.addSongToPlayList();
 
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.REMOVE)){
-//            fileUtils.removeSongToPlayList();
-            System.out.println("button presed = " + Const.ButtonNames.REMOVE);
+        } else if (jbtn.getActionCommand().equals(Const.ButtonProps.REMOVE)){
+            fileUtils.removeSongToPlayList();
 
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.UP)){
+        } else if (jbtn.getActionCommand().equals(Const.ButtonProps.UP)){
             audioPreproc.selectPreviousSong();
 
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.DOWN)){
+        } else if (jbtn.getActionCommand().equals(Const.ButtonProps.DOWN)) {
             audioPreproc.selectNextSong();
-
-
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.MONO_STEREO)){
-            System.out.println("button presed = " + Const.ButtonNames.MONO_STEREO);
-
-        } else if (jbtn.getActionCommand().equals(Const.ButtonNames.MUTE)){
-            System.out.println("button presed = " + Const.ButtonNames.MUTE);
-
         }
+    }
 
-
+    private void jToggleButtonAction(JToggleButton jtbtn){
+        if (jtbtn.getActionCommand().equals(Const.ButtonProps.MONO_STEREO)){
+            System.out.println("toggle button mono presed = " + Const.ButtonProps.MONO_STEREO);
+        } else if (jtbtn.getActionCommand().equals(Const.ButtonProps.MUTE)){
+            if (jtbtn.isSelected()){
+                audioPreproc.mute(true);
+            } else {
+                audioPreproc.mute(false);
+            }
+        }
     }
 }

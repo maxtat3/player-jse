@@ -1,6 +1,8 @@
 package listners;
 
-import gui.MainFrame;
+import app.Const;
+import gui.MainFrameV1;
+import player.AudioPreprocessor;
 import utils.Search;
 
 import javax.swing.*;
@@ -12,76 +14,55 @@ import java.awt.event.KeyEvent;
  */
 public class KeyListners extends KeyAdapter {
 
-    private static final String JTF_NAME_CONST = "w4jn4erf6rlsn";
-    private static final String JLIST_NAME_CONST = "jsdkjdskk3fw";
-
-    private MainFrame mainFrame;
+    private MainFrameV1 mainFrame;
+    private AudioPreprocessor audioPreproc;
     private Search srch;
-    private JTextField jtf;
-    private JList jList;
 
 
-    public KeyListners(MainFrame mainFrame) {
+    public KeyListners(MainFrameV1 mainFrame) {
         this.mainFrame = mainFrame;
         srch = new Search(mainFrame);
     }
 
-
-//    @Override
-//    public void keyPressed(KeyEvent e) {
-//        if ( !(e.getSource() instanceof JTextField) ){
-//            return;
-//        }
-//
-//        int keyCode = e.getKeyCode();
-//        System.out.println("key code = " + keyCode);
-//
-//        JTextField jtf = (JTextField)e.getSource();
-//
-//        if (jtf.getName().equals("liveSearch")){
-//            srch.searchInPlayList();
-//        }
-//    }
-
-
+    public KeyListners(MainFrameV1 mainFrame, AudioPreprocessor audioPreproc) {
+        this.mainFrame = mainFrame;
+        this.audioPreproc = audioPreproc;
+        srch = new Search(mainFrame);
+    }
 
 
     @Override
     public void keyPressed(KeyEvent e) {
-        jtf = new JTextField();
-        jList = new JList();
-        jtf.setName(JTF_NAME_CONST);
-        jList.setName(JLIST_NAME_CONST);
-
-//        проверяем какой это компонент
-        if ( e.getSource() instanceof JTextField ){
-             jtf = (JTextField)e.getSource();
-            System.out.println("-jtf");
-        } else if ( e.getSource() instanceof JList){
-            System.out.println("-jlist");
-             jList = (JList) e.getSource();
-        } else {
-            System.out.println("not");
-        }
 
 //        определяем комбинацию нажатых клавиш
         int keyCode = e.getKeyCode();
         System.out.println("key code = " + keyCode);
 
-
-//        выбираем из нескольких компонентов (если их несколько) какой именно был нажат
-        if (jtf.getName().equals("liveSearch")){
-            System.out.println("jtf - livesearch");
-
-        } else if (jList.getName().equals("jlist_playlist")){
-            if ( e.isControlDown() && (keyCode == KeyEvent.VK_P) ) {
-                System.out.println("jlist - playlist");
-            }
-        } else if (jtf.getName().equals("title")){
-            System.out.println("jtf - title");
+//        проверяем какой это компонент
+        if ( e.getSource() instanceof JTextField ){
+            jTextFieldKeyPressed((JTextField) e.getSource(), keyCode);
         }
 
-        jtf = null;
-        jList = null;
     }
+
+
+    /**
+     * Динамический поиск песен по playlist.
+     * При вводе любой буквы в этом JTextField происходит
+     * вызов метода поиска see {@link Search#searchInPlayList()} по plylist
+     * @param jtf - ссылка на вызываемый компонет типа JTextField
+     * @param keyCode - код нажатой клавиши
+     */
+    private void jTextFieldKeyPressed(JTextField jtf, int keyCode){
+        if (jtf.getName().equals(Const.TextFieldProps.LIVE_SEARCH_NAME)) {
+            if (keyCode == KeyEvent.VK_ENTER){
+                audioPreproc.play(); // если нажата enter - воспроизв найденной песни
+            } else {
+                srch.searchInPlayList(); // если любая другая клаввиша (буквы, цифры) - поиск по playlist
+            }
+        }
+    }
+
+
+
 }

@@ -3,8 +3,8 @@ package player;
 import javazoom.jlgui.basicplayer.BasicPlayer;
 import javazoom.jlgui.basicplayer.BasicPlayerException;
 import javazoom.jlgui.basicplayer.BasicPlayerListener;
-
 import java.io.File;
+
 
 /**
  * Created by max on 09.09.14.
@@ -12,8 +12,9 @@ import java.io.File;
 public class Player extends BasicPlayer {
 
     private static final String LOG_TAG = Player.class.getName() + ": ";
-    private String currFileName;
-    private double currVolumeValue;
+
+    private String currFilePath; // полный путь к файлу (включая имя файла)
+    private double currVolumeValue; // текцщий уровень громкости
     private BasicPlayer basicPlayer = new BasicPlayer();
 
 
@@ -21,17 +22,33 @@ public class Player extends BasicPlayer {
         basicPlayer.addBasicPlayerListener(basicPlayerListener); // Добавляем слушатель к basicPlayer
     }
 
-    public void play(String name){
-        File fileNameSong = new File(name);
+
+    /**
+     * Проигрывание выделенное в playlist песни
+     * @param path - полный путь к файлу (включая имя файла)
+     */
+    public void play(String path){
         try {
-            basicPlayer.open(fileNameSong);
+            if (basicPlayer.getStatus() == BasicPlayer.PAUSED){
+                basicPlayer.resume();
+                return;
+            }
+
+            currFilePath = path;
+            File filePathSong = new File(path);
+
+            basicPlayer.open(filePathSong);
             basicPlayer.play();
             basicPlayer.setGain(currVolumeValue);
         } catch (BasicPlayerException e) {
             e.printStackTrace();
         }
+        // TODO - установка на паузу раюотает, но есть проблема зависания и существует при переходе на паузу
     }
 
+    /**
+     * Остановка проигрывания песни
+     */
     public void stop(){
         try {
             basicPlayer.stop();
@@ -40,6 +57,9 @@ public class Player extends BasicPlayer {
         }
     }
 
+    /**
+     * Установка проигрываемой песни на паузу
+     */
     public void pause(){
         try {
             basicPlayer.pause();
@@ -48,6 +68,11 @@ public class Player extends BasicPlayer {
         }
     }
 
+    /**
+     * Установка громкости
+     * @param currValue - текущее значние ползунка
+     * @param maxValue - максимальное значние ползунка
+     */
     public void setVolume(int currValue, int maxValue) {
         currVolumeValue = currValue;
         try {
@@ -61,6 +86,35 @@ public class Player extends BasicPlayer {
         }
     }
 
+    /**
+     * Позволяет отключить звук во время проигрывания.
+     * При переходе из состояний вкл.звук\без звука
+     * предыдущее значение громкомти сохраняется.
+     * @param isMute - состояние в которое нужно  перейти: true - откл.; false - вкл.
+     */
+    private double memVol; // временное сохранение громкости при входе в режим "без звука" [mute]
+    public void mute(boolean isMute){
+        if (isMute){
+            memVol = currVolumeValue;
+            try {
+                basicPlayer.setGain(0); //откл. звук
+            } catch (BasicPlayerException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                basicPlayer.setGain(memVol); //вкл + восстанаавливаем предыдущее состояние громкости
+            } catch (BasicPlayerException e) {
+                e.printStackTrace();
+            }
+            memVol = 0f;
+        }
+    }
+
+    /**
+     * Перемотка в текущей песне
+     * @param bytes - переход в Байтах
+     */
     public void jumpInCurrFile(long bytes){
         try {
             System.out.println(LOG_TAG + "seek = " + bytes);
@@ -81,5 +135,9 @@ public class Player extends BasicPlayer {
         currVolumeValue = (double)currVal / (double)maxVal;
         return currVolumeValue;
     }
+
+
+
+
 
 }

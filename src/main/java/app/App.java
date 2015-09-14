@@ -1,10 +1,10 @@
 package app;
 
-import gui.MainFrame;
 import gui.MainFrameV1;
 import listners.AllListners;
 import player.AudioPreprocessor;
 import utils.FileUtils;
+
 import javax.swing.*;
 import javax.swing.plaf.nimbus.NimbusLookAndFeel;
 
@@ -41,9 +41,14 @@ public class App {
             e.printStackTrace();
         }
         MainFrameV1 mainFrameV1 = new MainFrameV1();
+        mainFrameV1.setTitle("player v0.7");
         mainFrameV1.setVisible(true);
 
-//        FileUtils fileUtils = new FileUtils(mainFrameV1);
+        FileUtils fileUtils = new FileUtils(mainFrameV1);
+
+        AudioPreprocessor audioPreproc = new AudioPreprocessor(mainFrameV1);
+
+        new AllListners(mainFrameV1, audioPreproc, fileUtils);
 
     }
 

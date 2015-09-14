@@ -1,9 +1,8 @@
 package utils;
 
-import gui.MainFrame;
+import gui.MainFrameV1;
 import player.MP3;
 
-import javax.swing.*;
 import java.util.ArrayList;
 
 /**
@@ -11,13 +10,13 @@ import java.util.ArrayList;
  */
 public class Search {
 
-    private MainFrame mainFrame;
+    private MainFrameV1 mainFrame;
 
 
     public Search() {
     }
 
-    public Search(MainFrame mainFrame) {
+    public Search(MainFrameV1 mainFrame) {
         this.mainFrame = mainFrame;
     }
 
@@ -32,8 +31,8 @@ public class Search {
 
         ArrayList<Integer> indexes = new ArrayList<Integer>(); //коллекция для индексов playlist
 
-        for (int i = 0; i < mainFrame.getPlaylistModel().size(); i++){
-            MP3 mp3 = (MP3) mainFrame.getPlaylistModel().getElementAt(i);
+        for (int i = 0; i < mainFrame.getPlayListModel().size(); i++){
+            MP3 mp3 = (MP3) mainFrame.getPlayListModel().getElementAt(i);
             if (mp3.getName().toUpperCase().contains(text.toUpperCase())){
                 indexes.add(i);
             }
